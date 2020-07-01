@@ -59,6 +59,13 @@ class BookModelDeSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class BookListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        for index, obj in enumerate(instance):
+            self.child.update(obj, validated_data[index])
+        return instance
+
+
 class BookModelSerializerV2(serializers.ModelSerializer):
 
     class Meta:
@@ -72,3 +79,9 @@ class BookModelSerializerV2(serializers.ModelSerializer):
                 'read_only': True
             }
         }
+
+        list_serializer_class = BookListSerializer
+
+    def validate_book_name(self, value):
+        print(self.context.get('request'))
+        return value
